@@ -29,8 +29,14 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
-    @product.save!
-  end
+
+    if @product.update(products_params)
+      redirect_to products_path, notice: 'Your product has been updated correctly'
+    else
+      flash.alert = 'Occur some error while update tour product'
+      render :edit, status: :unprocessable_entity
+    end
+  end 
   private
 
   def products_params
