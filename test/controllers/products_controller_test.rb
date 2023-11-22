@@ -71,6 +71,15 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert redirect_to: product_path
-    assert_equal flash[:alert], 'Occur some error while update tour product'
+    assert_equal flash[:alert], 'Occur some error while update your product'
+  end
+
+  test 'can delete products' do
+    assert_difference('Product.count', -1) do
+      delete product_path(products(:ps4))
+    end
+
+    assert_redirected_to products_path
+    assert_equal flash[:notice], 'Your product has been deleted correctly'
   end
 end
