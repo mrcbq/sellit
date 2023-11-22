@@ -1,10 +1,10 @@
 class ProductsController < ApplicationController
   def index
-    @products = Product.all
+    @products = Product.all.with_attached_photo
   end
 
   def show
-    @product = Product.find(params[:id])
+    product
   end
 
   def new
@@ -16,37 +16,35 @@ class ProductsController < ApplicationController
 
     if @product.save
       redirect_to products_path
-      flash.notice = 'Your product has been created correctly'
+      flash.notice = t('.created')
     else
-      flash.alert = 'Please complete all required fields'
+      flash.alert = t('.fail')
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
-    @product = Product.find(params[:id])
+    product
   end
 
   def update
-    @product = Product.find(params[:id])
 
-    if @product.update(products_params)
-      redirect_to products_path, notice: 'Your product has been updated correctly'
+    if product.update(products_params)
+      redirect_to products_path, notice: t('.updated')
     else
-      flash.alert = 'Occur some error while update your product'
+      flash.alert = t('.updated-fail')
       render :edit, status: :unprocessable_entity
     end
   end 
 
   def destroy
-    @product = Product.find(params[:id])
 
-    if @product.destroy
+    if product.destroy
       redirect_to products_path
-      flash.notice = 'Your product has been deleted correctly'
+      flash.notice = t('.destroyed')
     else
       redirect_to products_path
-      flash.alert = 'Occur some error while update your product'
+      flash.alert = t('.destroyed-fail')
       render :new, status: :unprocessable_entity
     end
   end
@@ -56,5 +54,9 @@ class ProductsController < ApplicationController
 
   def products_params
     params.require(:product).permit(:title, :description, :price, :photo)
+  end
+
+  def product
+    @product = Product.find(params[:id])
   end
 end
