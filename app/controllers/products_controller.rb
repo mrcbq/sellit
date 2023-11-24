@@ -1,6 +1,16 @@
 class ProductsController < ApplicationController
   def index
-    @products = Product.all.with_attached_photo
+    @categories = Category.order(name: :asc).load_async
+    @products = Product.with_attached_photo.order(created_at: :desc).load_async
+    if params[:category_id]
+      @products = @products.where(category_id: params[:category_id])
+    end
+    if params[:min_price].present?
+      @products = @products.where("price >= ?", params[:min_price])
+    end
+    if params[:max_price].present?
+      @products = @products.where("price <= ?", params[:max_price])
+    end
   end
 
   def show
@@ -53,7 +63,7 @@ class ProductsController < ApplicationController
   private
 
   def products_params
-    params.require(:product).permit(:title, :description, :price, :photo)
+    params.require(:product).permit(:title, :description, :price, :photo, :category_id)
   end
 
   def product
